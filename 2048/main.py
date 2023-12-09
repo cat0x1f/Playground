@@ -12,25 +12,27 @@ def run():
     while True:
         render()
 
-        if isLose() != False:
+        if isAllFilled() and not has_adjacent_numbers():
             print("You fucked it up!")
             quit()
 
-        newBlock()
         inputKey = input("> ")
 
         if inputKey == "w":
             goUp()
+            newBlock()
         elif inputKey == "s":
             goDown()
+            newBlock()
         elif inputKey == "a":
             goLeft()
+            newBlock()
         elif inputKey == "d":
             goRight()
+            newBlock()
+
         else:
             print("Error input")
-
-        run()
 
 
 def render():
@@ -73,12 +75,14 @@ def render():
 
 def newBlock():
     global board
-    row = random.randint(0, 3)
-    colume = random.randint(0, 3)
-    if board[row][colume] == 0:
-        board[row][colume] = random.choice([2, 4])  # 新块是2或4
-    else:
-        newBlock()
+    empty_cells = []
+    for i in range(4):
+        for j in range(4):
+            if board[i][j] == 0:
+                empty_cells.append((i, j))
+    if empty_cells:
+        row, column = random.choice(empty_cells)
+        board[row][column] = random.choice([2, 4])
 
 
 def goUp():
@@ -148,14 +152,33 @@ def rotateBoard(direction):
     board = rotated
 
 
-def isLose():
+def isAllFilled():
     global board
     for row in board:
         for num in row:
             if num == 0:
                 return False
+    return True
 
 
-newBlock()
-newBlock()
-run()
+def has_adjacent_numbers():
+    global board
+    array = board
+    rows = len(array)
+    cols = len(array[0])
+
+    for i in range(rows):
+        for j in range(cols):
+            current_number = array[i][j]
+            # 检查右边的元素
+            if j + 1 < cols and array[i][j + 1] == current_number:
+                return True
+            # 检查下面的元素
+            if i + 1 < rows and array[i + 1][j] == current_number:
+                return True
+    return False
+
+if __name__ == "__main__":
+    newBlock()
+    newBlock()
+    run()
